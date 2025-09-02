@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ferramentas E-commerce </title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            automax: {
+              red: '#b22222',
+              dark: '#343a40',
+              light: '#f8f9fa'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-automax-light flex flex-col h-screen">
+
+  <!-- Menu lateral fixo -->
+  <aside class="w-64 bg-automax-dark text-white flex flex-col p-6 h-screen fixed">
+    <h1 class="text-2xl font-bold mb-8 text-center text-automax-red">⚙️ Ferramentas E-commerce</h1>
+
+    <nav class="flex flex-col gap-4">
+      <button onclick="voltarHome()" id="btn-home" class="p-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition duration-200">🏠 Home</button>
+      <button onclick="carregarPagina('calculo icms.html', this)" class="p-3 rounded-lg bg-automax-red hover:bg-red-800 transition duration-200">📊 Cálculo ICMS</button>
+      <button onclick="carregarPagina('gerador de dados.html', this)" class="p-3 rounded-lg bg-automax-red hover:bg-red-800 transition duration-200">🎲 Gerador de Dados</button>
+      <button onclick="carregarPagina('lista de separaçao .html', this)" class="p-3 rounded-lg bg-automax-red hover:bg-red-800 transition duration-200">📋 Lista de Separação</button>
+      <button onclick="carregarPagina('teste impressao ml.html', this)" class="p-3 rounded-lg bg-automax-red hover:bg-red-800 transition duration-200">🏷️ Impressão ML</button>
+    </nav>
+  </aside>
+
+  <!-- Área principal -->
+  <main class="ml-64 flex-1 p-4 flex flex-col">
+    <div class="flex-1 flex items-center justify-center relative">
+      <!-- Conteúdo dinâmico -->
+      <iframe id="conteudo" src="" class="w-full h-full rounded-lg shadow-md border hidden opacity-50 transition-opacity duration-300" onload="this.classList.remove('opacity-50')"></iframe>
+
+      <!-- Tela inicial -->
+      <div id="home" class="text-center">
+        <h2 class="text-4xl font-bold text-automax-red mb-6">🚀 Bem-vindo ao Ferramentas E-commerce</h2>
+        <p class="text-lg text-gray-700">Escolha uma opção no menu ao lado para começar.</p>
+      </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="mt-4 text-center text-gray-600 text-sm">
+      Desenvolvido por LinoTech © 2025
+    </footer>
+  </main>
+
+  <script>
+    let paginaAtiva = null;
+
+    function carregarPagina(pagina, botao) {
+      // Atualiza destaque do botão
+      if (paginaAtiva) {
+        paginaAtiva.classList.remove('ring-2', 'ring-automax-red');
+      }
+      botao.classList.add('ring-2', 'ring-automax-red');
+      paginaAtiva = botao;
+
+      // Exibe iframe
+      document.getElementById('home').classList.add('hidden');
+      const iframe = document.getElementById('conteudo');
+      iframe.src = pagina;
+      iframe.classList.remove('hidden');
+    }
+
+    function voltarHome() {
+      // Remove destaque do botão ativo
+      if (paginaAtiva) {
+        paginaAtiva.classList.remove('ring-2', 'ring-automax-red');
+        paginaAtiva = null;
+      }
+
+      // Esconde iframe e mostra home
+      const iframe = document.getElementById('conteudo');
+      iframe.classList.add('hidden');
+      iframe.src = "";
+      document.getElementById('home').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>

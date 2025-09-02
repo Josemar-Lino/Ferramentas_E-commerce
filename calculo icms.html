@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cálculo de ICMS </title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            automax: {
+              red: '#b22222',
+              dark: '#343a40',
+              light: '#f8f9fa'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-automax-light flex flex-col items-center justify-start min-h-screen p-4">
+
+  <h1 class="text-4xl font-bold text-automax-red mb-12 mt-4">🎯 Cálculo de ICMS 🎯 </h1>
+
+  <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md mx-auto">
+    <label for="vt" class="block text-gray-700 text-sm font-medium mb-1">Valor Contábil:</label>
+    <input type="text" id="vt" placeholder="Ex: 1000,00" class="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-automax-red">
+
+    <label for="a" class="block text-gray-700 text-sm font-medium mb-1">Percentual da Alíquota:</label>
+    <input type="text" id="a" placeholder="Ex: 18,00" class="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-automax-red">
+
+    <label for="ic" class="block text-gray-700 text-sm font-medium mb-1">Valor ICMS:</label>
+    <input type="text" id="ic" placeholder="Ex: 27,90" class="w-full mb-6 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-automax-red">
+
+    <button onclick="calcularT()" class="w-full bg-automax-red hover:bg-red-800 text-white font-semibold py-3 rounded-lg transition-colors">Calcular</button>
+
+    <div class="resultado mt-6 text-center">
+      <h3 class="text-gray-800 text-lg font-semibold">Valor da Alíquota:</h3>
+      <span id="resultado" class="block mt-2 text-2xl font-bold text-automax-dark">--</span>
+    </div>
+  </div>
+
+  <script>
+    function calcularT() {
+      const vt = parseFloat(document.getElementById('vt').value.replace(',', '.'));
+      const a = parseFloat(document.getElementById('a').value.replace(',', '.'));
+      const ic = parseFloat(document.getElementById('ic').value.replace(',', '.'));
+
+      if (isNaN(vt) || isNaN(a) || isNaN(ic)) {
+        alert('Por favor, insira todos os valores corretamente (use vírgula para decimais).');
+        return;
+      }
+
+      const resultadoFinal = (vt / 100) * a - ic;
+      document.getElementById('resultado').textContent = resultadoFinal.toFixed(2).replace('.', ',');
+    }
+  </script>
+</body>
+</html>

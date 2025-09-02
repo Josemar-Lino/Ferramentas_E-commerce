@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Gerador de Dados Aleatórios - Automax</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          automax: {
+            red: '#b22222',
+            dark: '#343a40',
+            light: '#f8f9fa'
+          }
+        }
+      }
+    }
+  }
+</script>
+</head>
+<body class="bg-automax-light min-h-screen flex flex-col">
+
+  <!-- Título no topo -->
+  <h1 class="text-4xl font-bold text-automax-red text-center mt-12">🎲 Gerador de Dados Aleatórios 🎲</h1>
+
+  <!-- Container centralizado -->
+  <div class="flex-grow flex justify-center items-center p-4">
+    <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md animate-fadeIn">
+      <button onclick="gerarDados()" class="bg-automax-red text-white px-6 py-2 rounded-lg w-full hover:bg-red-800 transition">Gerar Dados</button>
+
+      <div class="mt-6 space-y-4">
+
+        <div class="flex flex-col">
+          <div id="copiadoData" class="text-green-500 text-sm mb-1 hidden">📋 Data copiada!</div>
+          <div class="flex justify-between items-center bg-gray-100 p-3 rounded-md">
+            <span><strong>Nascimento:</strong> <span id="dataNascimento">-</span></span>
+            <button class="bg-automax-red text-white px-3 py-1 rounded hover:bg-red-800 text-sm" onclick="copiarTexto('dataNascimento','copiadoData')">Copiar</button>
+          </div>
+        </div>
+
+        <div class="flex flex-col">
+          <div id="copiadoEmail" class="text-green-500 text-sm mb-1 hidden">📋 E-mail copiado!</div>
+          <div class="flex justify-between items-center bg-gray-100 p-3 rounded-md">
+            <span><strong>E-mail:</strong> <span id="email">-</span></span>
+            <button class="bg-automax-red text-white px-3 py-1 rounded hover:bg-red-800 text-sm" onclick="copiarTexto('email','copiadoEmail')">Copiar</button>
+          </div>
+        </div>
+
+        <div class="flex flex-col">
+          <div id="copiadoCelular" class="text-green-500 text-sm mb-1 hidden">📋 Celular copiado!</div>
+          <div class="flex justify-between items-center bg-gray-100 p-3 rounded-md">
+            <span><strong>Celular:</strong> <span id="celular">-</span></span>
+            <button class="bg-automax-red text-white px-3 py-1 rounded hover:bg-red-800 text-sm" onclick="copiarTexto('celular','copiadoCelular')">Copiar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<script>
+  const nomes = ["Ana", "João", "Maria", "Pedro", "Carla", "Lucas", "Bruna", "Rafael", "Juliana", "Aline", "Fábio", "Matheus", "Fernanda", "Gabriel", "Larissa", "Ricardo", "Camila", "Marcelo", "Patrícia", "André"];
+  const sobrenomes = ["Silva", "Santos", "Oliveira", "Souza", "Pereira", "Costa", "Almeida", "Ribeiro", "Ferreira", "Carvalho", "Gomes", "Martins", "Rocha", "Melo", "Barbosa", "Dias", "Lima", "Nunes", "Moura", "Freitas"];
+  const dominios = ["gmail.com","hotmail.com","yahoo.com.br","outlook.com","icloud.com","terra.com.br","bol.com.br","uol.com.br","globo.com","msn.com"];
+
+  function gerarDados() {
+    const ano = Math.floor(Math.random() * (2007 - 1940 + 1)) + 1940;
+    const mes = String(Math.floor(Math.random() * 12) + 1).padStart(2,'0');
+    const dia = String(Math.floor(Math.random() * 28) + 1).padStart(2,'0');
+    const dataNascimento = `${dia}/${mes}/${ano}`;
+
+    const nome = nomes[Math.floor(Math.random() * nomes.length)].toLowerCase();
+    const sobrenome = sobrenomes[Math.floor(Math.random() * sobrenomes.length)].toLowerCase();
+    const sufixo = Math.floor(Math.random() * 1000);
+    const dominio = dominios[Math.floor(Math.random() * dominios.length)];
+    const email = `${nome}.${sobrenome}${sufixo}@${dominio}`;
+
+    const celular = '9' + Math.floor(10000000 + Math.random() * 90000000);
+
+    document.getElementById("dataNascimento").textContent = dataNascimento;
+    document.getElementById("email").textContent = email;
+    document.getElementById("celular").textContent = celular;
+
+    document.getElementById("copiadoData").classList.add("hidden");
+    document.getElementById("copiadoEmail").classList.add("hidden");
+    document.getElementById("copiadoCelular").classList.add("hidden");
+  }
+
+  function copiarTexto(idElemento, idMensagem) {
+    const texto = document.getElementById(idElemento).textContent;
+    navigator.clipboard.writeText(texto).then(() => {
+      const msg = document.getElementById(idMensagem);
+      msg.classList.remove("hidden");
+      setTimeout(() => msg.classList.add("hidden"), 2000);
+    });
+  }
+</script>
+
+</body>
+</html>

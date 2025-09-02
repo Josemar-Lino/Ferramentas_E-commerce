@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comanda Mercado Livre </title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          automax: {
+            red: '#b22222',
+            dark: '#343a40',
+            light: '#f8f9fa'
+          }
+        }
+      }
+    }
+  }
+</script>
+<style>
+  @media print {
+    /* Oculta tudo, exceto a tabela */
+    body * {
+      visibility: hidden;
+    }
+    #tabela, #tabela * {
+      visibility: visible;
+    }
+    #tabela {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+
+    /* Remove a coluna "Ações" apenas na impressão */
+    th:last-child,
+    td:last-child {
+      display: none !important;
+    }
+
+    /* Aumenta título na impressão */
+    h2 {
+      font-size: 48px !important;
+    }
+
+    /* Estilo planilha */
+    table {
+      border-collapse: collapse !important;
+      font-size: 12pt;
+    }
+    th, td {
+      border: 1px solid #000 !important;
+      padding: 8px !important;
+    }
+    th {
+      background-color: #b22222 !important;
+      color: white !important;
+    }
+  }
+</style>
+</head>
+<body class="bg-automax-light text-automax-dark min-h-screen p-6">
+
+<!-- Título -->
+<h2 class="text-center text-3xl font-bold text-automax-red mb-6">Lista de Separação - Mercado Livre</h2>
+
+<!-- Formulário -->
+<div class="bg-white p-6 rounded-xl shadow-md flex flex-wrap gap-4 justify-center mb-6" id="form-container">
+  <label class="flex items-center gap-2 text-sm">
+    Cliente:
+    <input type="text" id="cliente" required class="border rounded-md px-3 py-2 w-40 focus:outline-none focus:ring-2 focus:ring-automax-red">
+  </label>
+  <label class="flex items-center gap-2 text-sm">
+    <input type="checkbox" id="kit" class="w-5 h-5 text-automax-red focus:ring-automax-red">
+    Kit
+  </label>
+  <label class="flex items-center gap-2 text-sm">
+    SKU:
+    <input type="text" id="sku" required class="border rounded-md px-3 py-2 w-32 focus:outline-none focus:ring-2 focus:ring-automax-red">
+  </label>
+  <label class="flex items-center gap-2 text-sm">
+    Descrição:
+    <input type="text" id="descricao" required class="border rounded-md px-3 py-2 w-52 focus:outline-none focus:ring-2 focus:ring-automax-red">
+  </label>
+  <label class="flex items-center gap-2 text-sm">
+    Quantidade:
+    <input type="number" id="quantidade" required class="border rounded-md px-3 py-2 w-20 focus:outline-none focus:ring-2 focus:ring-automax-red">
+  </label>
+  <label class="flex items-center gap-2 text-sm">
+    Locação:
+    <input type="text" id="locacao" required class="border rounded-md px-3 py-2 w-32 focus:outline-none focus:ring-2 focus:ring-automax-red">
+  </label>
+  
+  <!-- Botões -->
+  <div class="flex gap-3 w-full justify-center mt-4">
+    <button id="btnAdicionar" onclick="adicionarItem()" class="bg-automax-red text-white px-4 py-2 rounded-lg hover:bg-red-800 font-semibold transition transform hover:scale-105">
+      Adicionar
+    </button>
+    <button id="btnImprimir" onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold transition transform hover:scale-105">
+      Imprimir
+    </button>
+    <button id="btnLimpar" onclick="limparTudo()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 font-semibold transition transform hover:scale-105">
+      Limpar Tudo
+    </button>
+  </div>
+</div>
+
+<!-- Tabela -->
+<div class="overflow-x-auto bg-white rounded-xl shadow-md" id="table-container">
+  <table class="w-full border-collapse" id="tabela">
+    <thead>
+      <tr class="bg-automax-red text-white uppercase">
+        <th class="p-3 text-left">Cliente</th>
+        <th class="p-3 text-left">SKU</th>
+        <th class="p-3 text-left">Descrição</th>
+        <th class="p-3 text-left">Qtd</th>
+        <th class="p-3 text-left">Locação</th>
+        <th class="p-3 text-left">Ações</th>
+      </tr>
+    </thead>
+    <tbody id="corpo-tabela"></tbody>
+  </table>
+</div>
+
+<script>
+let dados = [];
+let editIndex = null;
+
+function salvarDados() {
+  localStorage.setItem("comandaAutomax", JSON.stringify(dados));
+}
+
+function carregarDados() {
+  const armazenado = localStorage.getItem("comandaAutomax");
+  if (armazenado) {
+    dados = JSON.parse(armazenado);
+    ordenarPorSKU();
+    atualizarTabela();
+  }
+}
+
+function adicionarItem() {
+  const clienteInput = document.getElementById("cliente");
+  const kit = document.getElementById("kit").checked;
+  const cliente = clienteInput.value.trim();
+  const sku = document.getElementById("sku").value.trim();
+  const descricao = document.getElementById("descricao").value.trim();
+  const quantidade = parseInt(document.getElementById("quantidade").value.trim());
+  const locacao = document.getElementById("locacao").value.trim();
+
+  if (!cliente || !sku || !descricao || isNaN(quantidade) || !locacao) {
+    alert("Por favor, preencha todos os campos.");
+    return;
+  }
+
+  const clienteTexto = kit ? `${cliente} (Kit)` : cliente;
+
+  if (editIndex !== null) {
+    dados[editIndex] = { cliente: clienteTexto, sku, descricao, quantidade, locacao };
+    editIndex = null;
+    document.getElementById("btnAdicionar").textContent = "Adicionar";
+  } else {
+    dados.push({ cliente: clienteTexto, sku, descricao, quantidade, locacao });
+  }
+
+  ordenarPorSKU();
+  salvarDados();
+  atualizarTabela();
+  limparFormulario();
+}
+
+function ordenarPorSKU() {
+  dados.sort((a, b) => a.sku.localeCompare(b.sku));
+}
+
+function atualizarTabela() {
+  const tabela = document.getElementById("corpo-tabela");
+  tabela.innerHTML = "";
+
+  dados.forEach((item, index) => {
+    const linha = document.createElement("tr");
+    linha.className = index % 2 === 0 ? "bg-gray-50" : "bg-white";
+
+    linha.innerHTML = `
+      <td class="p-3">${item.cliente}</td>
+      <td class="p-3">${item.sku}</td>
+      <td class="p-3">${item.descricao}</td>
+      <td class="p-3">${item.quantidade}</td>
+      <td class="p-3">${item.locacao}</td>
+      <td class="p-3 flex gap-2">
+        <button class="bg-yellow-400 text-gray-800 px-2 py-1 rounded hover:bg-yellow-500" onclick="editarItem(${index})">Editar</button>
+        <button class="bg-gray-600 text-white px-2 py-1 rounded hover:bg-gray-700" onclick="removerItem(${index})">Remover</button>
+      </td>
+    `;
+    tabela.appendChild(linha);
+  });
+
+  ajustarTamanhoFonte();
+}
+
+function ajustarTamanhoFonte() {
+  const tabela = document.getElementById("tabela");
+  const totalItens = dados.length;
+
+  let tamanhoFonte;
+  if (totalItens <= 10) {
+    tamanhoFonte = 'text-base';
+  } else if (totalItens <= 20) {
+    tamanhoFonte = 'text-sm';
+  } else if (totalItens <= 35) {
+    tamanhoFonte = 'text-xs';
+  } else {
+    tamanhoFonte = 'text-[10px]';
+  }
+
+  tabela.classList.remove('text-base','text-sm','text-xs','text-[10px]');
+  tabela.classList.add(tamanhoFonte);
+}
+
+function editarItem(index) {
+  const item = dados[index];
+  document.getElementById("cliente").value = item.cliente.replace(" (Kit)", "");
+  document.getElementById("kit").checked = item.cliente.includes("(Kit)");
+  document.getElementById("sku").value = item.sku;
+  document.getElementById("descricao").value = item.descricao;
+  document.getElementById("quantidade").value = item.quantidade;
+  document.getElementById("locacao").value = item.locacao;
+  document.getElementById("btnAdicionar").textContent = "Salvar Alterações";
+  editIndex = index;
+}
+
+function removerItem(index) {
+  dados.splice(index, 1);
+  salvarDados();
+  atualizarTabela();
+}
+
+function limparFormulario() {
+  document.getElementById("cliente").value = '';
+  document.getElementById("kit").checked = false;
+  document.getElementById("sku").value = '';
+  document.getElementById("descricao").value = '';
+  document.getElementById("quantidade").value = '';
+  document.getElementById("locacao").value = '';
+  document.getElementById("cliente").focus();
+}
+
+function limparTudo() {
+  if (confirm("Tem certeza que deseja apagar todos os itens?")) {
+    dados = [];
+    salvarDados();
+    atualizarTabela();
+  }
+}
+
+window.onload = carregarDados;
+</script>
+</body>
+</html>
